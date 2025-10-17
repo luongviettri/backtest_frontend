@@ -19,7 +19,6 @@ apiClient.interceptors.response.use(
   },
   (error) => {
     if (error.response && error.response.status === 401) {
-      console.log('Chưa xác thực hoặc token hết hạn. Đang chuyển về trang Login...')
       router.push({ name: 'Login' })
     }
     return Promise.reject(error)
