@@ -2,7 +2,21 @@
   <div class="p-8">
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-3xl font-bold text-text-primary">Dashboard</h1>
-      
+        <div class="mt-6 border-t pt-6">
+  <h3 class="text-lg font-medium">Kiểm tra Bảo mật CSRF</h3>
+  <p class="text-gray-500 mt-1">
+    Nhấn nút bên dưới để gửi một yêu cầu POST được bảo vệ.
+  </p>
+  <button 
+    @click="testCsrfEndpoint"
+    class="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg"
+  >
+    Test Update Profile
+  </button>
+  <p v-if="testResult" class="mt-4 p-3 rounded" :class="isTestSuccess ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
+    {{ testResult }}
+  </p>
+</div>
       <button 
         v-if="userData" 
         @click="handleLogout" 
@@ -58,4 +72,25 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+const testResult = ref(null);
+const isTestSuccess = ref(false);
+
+const testCsrfEndpoint = async () => {
+  try {
+    // apiClient đã được cấu hình với interceptor
+    // Nó sẽ tự động đính kèm X-CSRF-Token
+    const response = await apiClient.post('/users/update-profile');
+
+    // Nếu thành công
+    testResult.value = `Backend trả về: "${response.data.message}"`;
+    isTestSuccess.value = true;
+
+  } catch (error) {
+    // Nếu thất bại (ví dụ: lỗi 403 CSRF token mismatch)
+    testResult.value = `Thất bại! Lỗi: ${error.response?.data?.detail || error.message}`;
+    isTestSuccess.value = false;
+  }
+};
+
 </script>
