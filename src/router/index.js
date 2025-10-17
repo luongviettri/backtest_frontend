@@ -2,10 +2,16 @@
 
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+
+// --- IMPORT CÁC COMPONENT CÓ SẴN ---
 import RegisterPage from '../views/Auth/RegisterPage.vue'
 import LoginPage from '../views/Auth/LoginPage.vue'
 import DashboardPage from '../views/Dashboard/DashboardPage.vue'
 import DefaultLayout from '../layouts/DefaultLayout.vue'
+
+// --- BƯỚC 1: IMPORT CÁC COMPONENT MỚI CHO TÍNH NĂNG STRATEGY ---
+import StrategyListPage from '../views/StrategyListPage.vue'
+import StrategyBuilderPage from '../views/StrategyBuilderPage.vue'
 
 const routes = [
   // --- NHÓM 1: CÁC ROUTE CÔNG KHAI (KHÔNG CẦN ĐĂNG NHẬP) ---
@@ -32,7 +38,19 @@ const routes = [
         path: 'dashboard',
         name: 'Dashboard',
         component: DashboardPage,
-        // Meta ở đây không cần thiết nữa vì đã có ở route cha
+      },
+
+      // --- BƯỚC 2: THÊM CÁC ROUTE MỚI VÀO ĐÂY ---
+      {
+        path: 'strategies',
+        name: 'StrategyList',
+        component: StrategyListPage,
+      },
+      {
+        // Dấu '?' cho biết 'id' là optional, dùng cho cả Tạo mới và Cập nhật
+        path: 'strategies/builder/:id?',
+        name: 'StrategyBuilder',
+        component: StrategyBuilderPage,
       },
       // Thêm các route cần bảo vệ khác vào đây
       // ví dụ: { path: 'profile', name: 'Profile', component: ProfilePage }
@@ -45,16 +63,16 @@ const router = createRouter({
   routes,
 })
 
-// --- "NGƯỜI GÁC CỔNG" ĐÃ ĐƯỢC NÂNG CẤP ---
+// --- "NGƯỜI GÁC CỔNG" (NAVIGATION GUARD) - GIỮ NGUYÊN HOÀN TOÀN ---
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
 
-  // Logic kiểm tra một lần duy nhất khi tải ứng dụng (giữ nguyên, rất tốt!)
+  // Logic kiểm tra một lần duy nhất khi tải ứng dụng
   if (!authStore.isInitialized) {
     await authStore.checkAuthStatus()
   }
 
-  // SỬA LỖI LOGIC: Dùng `to.matched.some` để kiểm tra meta cho cả route cha và con
+  // Dùng `to.matched.some` để kiểm tra meta cho cả route cha và con
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
   const isAuthenticated = authStore.isAuthenticated
 
