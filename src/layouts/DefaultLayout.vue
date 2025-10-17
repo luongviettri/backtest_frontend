@@ -1,96 +1,28 @@
 <template>
-  <div class="p-8">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-3xl font-bold text-text-primary">Dashboard</h1>
-        <div class="mt-6 border-t pt-6">
-  <h3 class="text-lg font-medium">Kiểm tra Bảo mật CSRF</h3>
-  <p class="text-gray-500 mt-1">
-    Nhấn nút bên dưới để gửi một yêu cầu POST được bảo vệ.
-  </p>
-  <button 
-    @click="testCsrfEndpoint"
-    class="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg"
-  >
-    Test Update Profile
-  </button>
-  <p v-if="testResult" class="mt-4 p-3 rounded" :class="isTestSuccess ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
-    {{ testResult }}
-  </p>
-</div>
-      <button 
-        v-if="userData" 
-        @click="handleLogout" 
-        class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300"
-      >
-        Đăng xuất
-      </button>
-      </div>
+  <div class="app-layout">
     
-    <div v-if="loading" class="text-center text-gray-500">
-      <p>Đang xác thực và tải dữ liệu...</p>
-    </div>
+    <div class="main-content-area">
+      <main class="p-8">
+        <router-view />
+      </main>
 
-    <div v-else-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-      <p>Lỗi: {{ error }}</p>
-    </div>
-
-    <div v-else-if="userData" class="bg-white p-6 rounded-lg shadow">
-      <h2 class="text-xl font-semibold">Chào mừng trở lại, {{ userData.name || userData.email }}!</h2>
-      <p class="text-gray-600 mt-2">Đây là trang quản trị của bạn.</p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import apiClient from '@/api/axios';
-import { useAuthStore } from '@/stores/auth'; // <--- Import auth store
-
-const userData = ref(null);
-const loading = ref(true);
-const error = ref(null);
-const authStore = useAuthStore(); // <--- Khởi tạo store
-
-// ***** BƯỚC 2: THÊM HÀM XỬ LÝ ĐĂNG XUẤT *****
-const handleLogout = async () => {
-  // Gọi action 'logout' từ Pinia store.
-  // Mọi logic phức tạp sẽ được xử lý tập trung trong store.
-  await authStore.logout(); 
-};
-// ***** KẾT THÚC THAY ĐỔI *****
-
-onMounted(async () => {
-  try {
-    const response = await apiClient.get('/users/me'); 
-    userData.value = response.data;
-  } catch (err) {
-    if (err.response?.status !== 401) {
-       error.value = 'Không thể tải dữ liệu dashboard. Vui lòng thử lại sau.';
-    }
-    console.error('Lỗi khi fetch dữ liệu người dùng:', err);
-  } finally {
-    loading.value = false;
-  }
-});
-
-const testResult = ref(null);
-const isTestSuccess = ref(false);
-
-const testCsrfEndpoint = async () => {
-  try {
-    // apiClient đã được cấu hình với interceptor
-    // Nó sẽ tự động đính kèm X-CSRF-Token
-    const response = await apiClient.post('/users/update-profile');
-
-    // Nếu thành công
-    testResult.value = `Backend trả về: "${response.data.message}"`;
-    isTestSuccess.value = true;
-
-  } catch (error) {
-    // Nếu thất bại (ví dụ: lỗi 403 CSRF token mismatch)
-    testResult.value = `Thất bại! Lỗi: ${error.response?.data?.detail || error.message}`;
-    isTestSuccess.value = false;
-  }
-};
-
+// File layout này có thể không cần logic, hoặc chỉ import các component chung
+// như Sidebar, Header.
 </script>
+
+<style scoped>
+/* CSS cho layout chính, ví dụ */
+.app-layout {
+  display: flex;
+  height: 100vh;
+}
+.main-content-area {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+</style>

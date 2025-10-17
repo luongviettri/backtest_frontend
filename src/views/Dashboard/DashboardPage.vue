@@ -1,6 +1,15 @@
 <template>
-  <div class="p-8">
-    <h1 class="text-3xl font-bold text-text-primary mb-6">Dashboard</h1>
+  <div>
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold text-text-primary">Dashboard</h1>
+      <button 
+        v-if="userData" 
+        @click="handleLogout" 
+        class="bg-status-danger hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300"
+      >
+        Đăng xuất
+      </button>
+    </div>
     
     <div v-if="loading" class="text-center text-gray-500">
       <p>Đang xác thực và tải dữ liệu...</p>
@@ -10,34 +19,32 @@
       <p>Lỗi: {{ error }}</p>
     </div>
 
-    <div v-else-if="userData" class="bg-white p-6 rounded-lg shadow">
-      <h2 class="text-xl font-semibold">Chào mừng trở lại, {{ userData.email }}!</h2>
-      <p class="text-gray-600 mt-2">Đây là trang quản trị của bạn.</p>
-      </div>
+    <div v-else-if="userData" class="bg-background-primary p-6 rounded-lg shadow">
+      <h2 class="text-xl font-semibold">Chào mừng trở lại, {{ userData.full_name || userData.email }}!</h2>
+      <p class="text-text-secondary mt-2">Đây là trang quản trị của bạn.</p>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-// SỬA ĐỔI QUAN TRỌNG: Sử dụng apiClient đã cấu hình, không dùng axios gốc
-import apiClient from '@/api/axios'; // Dùng alias '@' cho an toàn
+import apiClient from '@/api/axios';
+import { useAuthStore } from '@/stores/auth';
 
 const userData = ref(null);
 const loading = ref(true);
 const error = ref(null);
+const authStore = useAuthStore();
 
-// onMounted là một hook sẽ chạy ngay khi component được hiển thị
+const handleLogout = async () => {
+  await authStore.logout(); 
+};
+
 onMounted(async () => {
   try {
-    // ĐÂY CHÍNH LÀ "CẢM BIẾN":
-    // Cố gắng gọi đến một endpoint được bảo vệ.
-    // Nếu thành công, hiển thị dữ liệu.
-    // Nếu thất bại với lỗi 401, interceptor sẽ tự động chuyển hướng.
     const response = await apiClient.get('/users/me'); 
     userData.value = response.data;
   } catch (err) {
-    // Interceptor sẽ xử lý lỗi 401. 
-    // Chúng ta chỉ cần xử lý các lỗi khác ở đây (ví dụ: 500 Server Error)
     if (err.response?.status !== 401) {
        error.value = 'Không thể tải dữ liệu dashboard. Vui lòng thử lại sau.';
     }
