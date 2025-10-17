@@ -28,7 +28,6 @@ const error = ref(null);
 
 // onMounted là một hook sẽ chạy ngay khi component được hiển thị
 onMounted(async () => {
-  console.log('Dashboard mounted. Fetching user data...');
   try {
     // ĐÂY CHÍNH LÀ "CẢM BIẾN":
     // Cố gắng gọi đến một endpoint được bảo vệ.

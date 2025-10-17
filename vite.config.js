@@ -13,6 +13,9 @@ export default defineConfig({
     },
   },
   server: {
+    port: 5174, // Cổng bạn muốn sử dụng
+    strictPort: true, // Nếu cổng này bận, Vite sẽ báo lỗi thay vì tự đổi cổng khác
+
     // THÊM VÀO: Cấu hình proxy
     proxy: {
       // Bất kỳ request nào bắt đầu bằng '/api' sẽ được chuyển tiếp

@@ -1,41 +1,41 @@
 // src/router/index.js
 
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from '@/stores/auth' // Import store của bạn
+import { useAuthStore } from '@/stores/auth'
 import RegisterPage from '../views/Auth/RegisterPage.vue'
 import LoginPage from '../views/Auth/LoginPage.vue'
 import DashboardPage from '../views/Dashboard/DashboardPage.vue'
 import DefaultLayout from '../layouts/DefaultLayout.vue'
 
 const routes = [
+  // --- NHÓM 1: CÁC ROUTE CÔNG KHAI (KHÔNG CẦN ĐĂNG NHẬP) ---
   {
-    path: '/',
-    redirect: '/login',
+    path: '/login',
+    name: 'Login',
+    component: LoginPage,
   },
   {
     path: '/register',
     name: 'Register',
     component: RegisterPage,
-    meta: { requiresAuth: false }, // Đánh dấu các trang không cần đăng nhập
   },
+
+  // --- NHÓM 2: CÁC ROUTE ĐƯỢC BẢO VỆ (YÊU CẦU ĐĂNG NHẬP) ---
+  // Tất cả các route trong nhóm này sẽ sử dụng DefaultLayout
   {
-    path: '/login',
-    name: 'Login',
-    component: LoginPage,
-    meta: { requiresAuth: false }, // Đánh dấu các trang không cần đăng nhập
-  },
-  // Các route cần layout và cần được bảo vệ
-  {
-    path: '/',
+    path: '/', // Sử dụng path gốc cho layout chính
     component: DefaultLayout,
-    meta: { requiresAuth: true }, // Đánh dấu các trang cần đăng nhập
+    redirect: '/dashboard', // Nếu người dùng vào trang gốc, tự động chuyển đến dashboard
+    meta: { requiresAuth: true }, // Đánh dấu toàn bộ nhóm này cần đăng nhập
     children: [
       {
         path: 'dashboard',
         name: 'Dashboard',
         component: DashboardPage,
+        // Meta ở đây không cần thiết nữa vì đã có ở route cha
       },
-      // Các trang khác cần bảo vệ
+      // Thêm các route cần bảo vệ khác vào đây
+      // ví dụ: { path: 'profile', name: 'Profile', component: ProfilePage }
     ],
   },
 ]
@@ -45,20 +45,17 @@ const router = createRouter({
   routes,
 })
 
-// <<< "NGƯỜI GÁC CỔNG" THÔNG MINH HƠN >>>
+// --- "NGƯỜI GÁC CỔNG" ĐÃ ĐƯỢC NÂNG CẤP ---
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
 
-  // THAY ĐỔI QUAN TRỌNG NHẤT:
-  // Chỉ gọi API checkAuthStatus một lần duy nhất khi ứng dụng vừa tải.
+  // Logic kiểm tra một lần duy nhất khi tải ứng dụng (giữ nguyên, rất tốt!)
   if (!authStore.isInitialized) {
-    // Đợi cho việc kiểm tra ban đầu hoàn tất.
     await authStore.checkAuthStatus()
   }
 
-  // Từ đây, isInitialized đã là true, và chúng ta có thể tin tưởng vào
-  // trạng thái isAuthenticated trong store mà không cần gọi lại API.
-  const requiresAuth = to.meta.requiresAuth
+  // SỬA LỖI LOGIC: Dùng `to.matched.some` để kiểm tra meta cho cả route cha và con
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
   const isAuthenticated = authStore.isAuthenticated
 
   if (requiresAuth && !isAuthenticated) {
