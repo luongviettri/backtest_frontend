@@ -22,14 +22,12 @@
 
       <form @submit.prevent="handleSubmit" class="space-y-4">
         <div>
-          <label for="email" class="sr-only">Email</label>
-          <input v-model="form.email" @blur="v$.email.$touch" id="email" name="email" type="email" autocomplete="email" class="appearance-none rounded-lg relative block w-full px-3 py-3 border placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-accent-primary focus:border-accent-primary focus:z-10 sm:text-sm" :class="{ 'border-red-500': v$.email.$error }" placeholder="Địa chỉ email">
+          <BaseInput v-model="form.email" @blur="v$.email.$touch" id="email" name="email" type="email" autocomplete="email" :error="v$.email.$error" placeholder="Địa chỉ email" />
           <p v-if="v$.email.$error" class="text-red-500 text-xs mt-1">{{ v$.email.$errors[0].$message }}</p>
         </div>
         <div>
-          <label for="password" class="sr-only">Mật khẩu</label>
-          <input v-model="form.password" @blur="v$.password.$touch" id="password" name="password" type="password" autocomplete="current-password" class="appearance-none rounded-lg relative block w-full px-3 py-3 border placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-accent-primary focus:border-accent-primary focus:z-10 sm:text-sm" :class="{ 'border-red-500': v$.password.$error }" placeholder="Mật khẩu">
-            <p v-if="v$.password.$error" class="text-red-500 text-xs mt-1">{{ v$.password.$errors[0].$message }}</p>
+          <BaseInput v-model="form.password" @blur="v$.password.$touch" id="password" name="password" type="password" autocomplete="current-password" :error="v$.password.$error" placeholder="Mật khẩu" />
+          <p v-if="v$.password.$error" class="text-red-500 text-xs mt-1">{{ v$.password.$errors[0].$message }}</p>
         </div>
         <div class="flex items-center justify-between">
           <div class="flex items-center">
@@ -41,9 +39,7 @@
           </div>
         </div>
         <div>
-          <button type="submit" class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-accent-primary hover:bg-accent-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary">
-            Đăng nhập
-          </button>
+          <BaseButton type="submit">Đăng nhập</BaseButton>
         </div>
       </form>
     </div>
@@ -61,6 +57,8 @@ import { reactive, ref, computed, onMounted } from 'vue';
 import useVuelidate from '@vuelidate/core';
 import { required, email, helpers } from '@vuelidate/validators';
 import { useRouter } from 'vue-router';
+import BaseInput from '@/components/base/BaseInput.vue';
+import BaseButton from '@/components/base/BaseButton.vue';
 import apiClient from '@/api/axios';
 import { useAuthStore } from '@/stores/auth';
 

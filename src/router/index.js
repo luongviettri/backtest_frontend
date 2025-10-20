@@ -11,7 +11,7 @@ import DefaultLayout from '../layouts/DefaultLayout.vue'
 
 // --- BƯỚC 1: IMPORT CÁC COMPONENT MỚI CHO TÍNH NĂNG STRATEGY ---
 import StrategyListPage from '../views/StrategyListPage.vue'
-import StrategyBuilderPage from '../views/StrategyBuilderPage.vue'
+import StrategyBuilderAdvancedPage from '../views/StrategyBuilderAdvancedPage.vue'
 
 const routes = [
   // --- NHÓM 1: CÁC ROUTE CÔNG KHAI (KHÔNG CẦN ĐĂNG NHẬP) ---
@@ -49,8 +49,28 @@ const routes = [
       {
         // Dấu '?' cho biết 'id' là optional, dùng cho cả Tạo mới và Cập nhật
         path: 'strategies/builder/:id?',
-        name: 'StrategyBuilder',
-        component: StrategyBuilderPage,
+        name: 'StrategyBuilderAdvanced', // SỬA LỖI: Đổi tên route cho nhất quán
+        component: StrategyBuilderAdvancedPage,
+      },
+      // [THÊM MỚI] Route cho builder chuyên biệt (Trend)
+      {
+        // Dùng chung logic id optional
+        path: 'strategies/builder/trend/:id?',
+        name: 'StrategyBuilderTrend',
+        component: () => import('../views/StrategyBuilderTrendPage.vue'),
+      },
+      // [THÊM MỚI] Route cho builder chuyên biệt (Range)
+      {
+        // Dùng chung logic id optional
+        path: 'strategies/builder/range/:id?',
+        name: 'StrategyBuilderRange',
+        component: () => import('../views/StrategyBuilderRangePage.vue'),
+      },
+      {
+        // [THÊM MỚI] Route cho trang báo cáo chi tiết
+        path: 'strategies/report/:id',
+        name: 'StrategyReport',
+        component: () => import('../views/StrategyReportPage.vue'), // SỬA LỖI: Sửa đường dẫn import
       },
       // Thêm các route cần bảo vệ khác vào đây
       // ví dụ: { path: 'profile', name: 'Profile', component: ProfilePage }

@@ -1,28 +1,17 @@
 <template>
-  <button class="base-button">
-    <slot></slot> </button>
+  <button
+    :type="type"
+    class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-accent-primary hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-primary"
+  >
+    <slot></slot>
+  </button>
 </template>
 
-<script>
-export default {
-  name: 'BaseButton'
-}
+<script setup>
+defineProps({
+  type: {
+    type: String,
+    default: 'submit',
+  },
+});
 </script>
-
-<style scoped>
-.base-button {
-  width: 100%;
-  padding: 12px 20px;
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: var(--border-radius-md);
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.base-button:hover {
-  background-color: #4338CA; /* Màu đậm hơn một chút khi hover */
-}
-</style>

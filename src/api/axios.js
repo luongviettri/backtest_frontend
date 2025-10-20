@@ -4,7 +4,7 @@ import axios from 'axios'
 import router from '../router'
 
 const apiClient = axios.create({
-  baseURL: 'http://localhost:8000/api/v1',
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   withCredentials: true,
 })
 
