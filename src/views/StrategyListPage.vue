@@ -106,6 +106,7 @@ onMounted(() => {
 });
 
 const goToCreate = () => {
+  // [SỬA ĐỔI] Chuyển hướng nút "Tùy chỉnh Nâng cao" đến builder nâng cao
   router.push({ name: 'StrategyBuilderAdvanced' });
   isModalOpen.value = false;
 };
@@ -113,13 +114,15 @@ const goToCreate = () => {
 const createFromTemplate = (templateId) => {
   let routeName;
   if (templateId === 'trend_following') {
+    // [SỬA ĐỔI] Chuyển hướng nút "Giao dịch theo Xu hướng" đến builder xu hướng
     routeName = 'StrategyBuilderTrend';
   } else if (templateId === 'range_trading') {
     routeName = 'StrategyBuilderRange';
   }
   
   if (routeName) {
-    router.push({ name: routeName });
+    // Thêm query param để StrategyTester có thể áp dụng mẫu tương ứng nếu cần
+    router.push({ name: routeName, query: { template: 'trend' } });
   }
   isModalOpen.value = false;
 };

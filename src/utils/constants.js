@@ -15,6 +15,8 @@ export const INDICATOR_TYPES = {
   AO: 'AO',
   WILLIAMS_R: 'WilliamsR',
   OBV: 'OBV',
+  ADX: 'ADX',
+  PARABOLIC_SAR: 'ParabolicSAR',
 }
 
 /**

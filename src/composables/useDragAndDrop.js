@@ -1,5 +1,4 @@
 import { ref } from 'vue'
-import { CONDITION_ZONES } from '@/utils/constants'
 
 /**
  * Composable để quản lý logic kéo và thả các chỉ báo.
@@ -8,42 +7,52 @@ import { CONDITION_ZONES } from '@/utils/constants'
  */
 export function useDragAndDrop(strategyStore) {
   const draggingIndicator = ref(null)
-  // [THAY ĐỔI] Sử dụng một state duy nhất để quản lý vùng đang được kéo qua
   const activeDropZone = ref(null)
 
-  function handleDragStart(indicatorName) {
-    draggingIndicator.value = indicatorName
+  // Sửa tên tham số cho rõ ràng
+  function handleDragStart(indicatorType) {
+    console.log('[DragDrop] Start dragging:', indicatorType) // Thêm log
+    draggingIndicator.value = indicatorType // Lưu type thay vì name
   }
 
   function handleDragEnd() {
+    console.log('[DragDrop] End dragging') // Thêm log
     draggingIndicator.value = null
-    activeDropZone.value = null // Reset vùng active khi kết thúc kéo
+    activeDropZone.value = null
   }
 
   function handleDragOver(zoneType) {
-    // [THAY ĐỔI] Cập nhật vùng đang active
     activeDropZone.value = zoneType
   }
 
   function handleDragLeave(zoneType) {
-    // [THAY ĐỔI] Chỉ reset nếu rời khỏi đúng vùng đang active
     if (activeDropZone.value === zoneType) {
       activeDropZone.value = null
     }
   }
 
   function handleDrop(zoneType) {
+    console.log(`[DragDrop] Dropped on zone: ${zoneType}`) // Thêm log
     if (draggingIndicator.value) {
-      // Action `addCondition` đã được cập nhật để xử lý 4 zoneType mới
-      strategyStore.addCondition(zoneType, draggingIndicator.value)
+      console.log(
+        `[DragDrop] Adding indicator type: ${draggingIndicator.value} to zone: ${zoneType}`,
+      ) // Thêm log chi tiết
+      try {
+        // Truyền indicatorType vào action
+        strategyStore.addCondition(zoneType, draggingIndicator.value)
+        console.log('[DragDrop] addCondition called successfully.') // Log thành công
+      } catch (error) {
+        console.error('[DragDrop] Error calling addCondition:', error) // Log nếu có lỗi từ store action
+      }
+    } else {
+      console.log('[DragDrop] Drop ignored, no indicator was being dragged.') // Log nếu không có gì đang kéo
     }
-    handleDragEnd()
+    // Gọi handleDragEnd() để reset trạng thái kéo thả
+    handleDragEnd() // <-- QUAN TRỌNG: Đảm bảo dòng này được gọi để reset
   }
 
   return {
-    // [THAY ĐỔI] Export state mới
     activeDropZone,
-    // Các hàm xử lý không đổi tên
     handleDragStart,
     handleDragEnd,
     handleDragOver,

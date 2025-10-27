@@ -12,12 +12,11 @@
         @drop="$emit('drop', 'filters')"
       >
         <LogicBlock
-          v-for="condition in strategyStore.filters"
+          v-for="condition in strategyStore.filters.children"
           :key="condition.id"
           :condition="condition"
           :is-selected="
-            strategyStore.selectedCondition &&
-            strategyStore.selectedCondition.id === condition.id
+            strategyStore.selectedCondition && strategyStore.selectedCondition.id === condition.id
           "
           @select="$emit('select-condition', condition)"
           @delete="$emit('delete-condition', { zoneType: 'filters', conditionId: condition.id })"
@@ -36,12 +35,11 @@
         @drop="$emit('drop', 'signals')"
       >
         <LogicBlock
-          v-for="condition in strategyStore.signals"
+          v-for="condition in strategyStore.signals.children"
           :key="condition.id"
           :condition="condition"
           :is-selected="
-            strategyStore.selectedCondition &&
-            strategyStore.selectedCondition.id === condition.id
+            strategyStore.selectedCondition && strategyStore.selectedCondition.id === condition.id
           "
           @select="$emit('select-condition', condition)"
           @delete="$emit('delete-condition', { zoneType: 'signals', conditionId: condition.id })"

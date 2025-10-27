@@ -95,15 +95,21 @@ router.beforeEach(async (to, from, next) => {
   // Dùng `to.matched.some` để kiểm tra meta cho cả route cha và con
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
   const isAuthenticated = authStore.isAuthenticated
-
+  // THÊM LOG Ở ĐÂY
+  console.log(
+    `[Router Guard] Navigating to: ${String(to.name)}, requiresAuth: ${requiresAuth}, isAuthenticated: ${isAuthenticated}`,
+  )
   if (requiresAuth && !isAuthenticated) {
     // Nếu route yêu cầu xác thực mà người dùng chưa đăng nhập -> về Login.
+    console.log('[Router Guard] Redirecting to Login')
     next({ name: 'Login' })
   } else if ((to.name === 'Login' || to.name === 'Register') && isAuthenticated) {
     // Nếu đã đăng nhập mà cố vào trang Login/Register -> về Dashboard.
+    console.log('[Router Guard] Redirecting to Dashboard')
     next({ name: 'Dashboard' })
   } else {
     // Các trường hợp còn lại -> cho phép đi tiếp.
+    console.log('[Router Guard] Allowing navigation')
     next()
   }
 })

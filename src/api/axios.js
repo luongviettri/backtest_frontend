@@ -27,16 +27,18 @@ apiClient.interceptors.request.use(
       if (parts.length === 2) return parts.pop().split(';').shift()
     }
 
-    if (!['GET', 'HEAD', 'OPTIONS'].includes(config.method.toUpperCase())) {
-      const csrfToken = getCookie('csrf_token')
+    if (!['GET', 'HEAD', 'OPTIONS', 'TRACE'].includes(config.method.toUpperCase())) {
+      // ▼▼▼ SỬA TÊN COOKIE Ở ĐÂY ▼▼▼
+      const csrfToken = getCookie('fastapi_csrf_token') // Đọc đúng tên cookie
 
       if (csrfToken) {
-        config.headers['X-CSRF-Token'] = csrfToken
-        console.log('[AXIOS INTERCEPTOR] Đã đính kèm CSRF token vào header.')
+        // ▼▼▼ ĐẢM BẢO TÊN HEADER LÀ ĐÚNG NHƯ DƯỚI ĐÂY ▼▼▼
+        config.headers['X-CSRF-Token'] = csrfToken // <-- Sử dụng tên backend yêu cầu
+        console.log('[AXIOS INTERCEPTOR] Đã đính kèm CSRF token vào header X-CSRF-Token.')
       } else {
-        // Cảnh báo này bây giờ sẽ chỉ xuất hiện khi một request cần bảo vệ thực sự bị thiếu token
+        // Log này không nên xuất hiện nữa sau khi sửa tên cookie
         console.warn(
-          '[AXIOS INTERCEPTOR] Không tìm thấy CSRF cookie để đính kèm. Request có thể bị từ chối.',
+          '[AXIOS INTERCEPTOR] Không tìm thấy CSRF cookie "fastapi_csrf_token" để đính kèm.',
         )
       }
     }

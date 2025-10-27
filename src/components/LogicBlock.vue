@@ -1,7 +1,7 @@
 <template>
   <div
     class="logic-block"
-    :class="{ 'selected': isSelected }"
+    :class="{ selected: isSelected }"
     :data-indicator-type="condition.type"
     @click="$emit('select', condition)"
   >
@@ -13,7 +13,10 @@
         <span v-if="prefixText" class="mr-1">{{ prefixText }}</span>
         <b class="text-slate-900">{{ valueText }}</b>
         <!-- [THAY ĐỔI] Hiển thị timeframe nếu có -->
-        <span v-if="condition.timeframe" class="ml-2 text-xs font-semibold text-sky-700 bg-sky-100 px-1.5 py-0.5 rounded">
+        <span
+          v-if="condition.timeframe"
+          class="ml-2 text-xs font-semibold text-sky-700 bg-sky-100 px-1.5 py-0.5 rounded"
+        >
           trên {{ condition.timeframe }}
         </span>
       </span>
@@ -28,9 +31,9 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import VueFeather from 'vue-feather';
-import { INDICATOR_TYPES } from '@/utils/constants'; // Import constants để so sánh
+import { computed } from 'vue'
+import VueFeather from 'vue-feather'
+import { INDICATOR_TYPES } from '@/utils/constants' // Import constants để so sánh
 
 const props = defineProps({
   condition: {
@@ -41,59 +44,69 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-});
+})
 
-defineEmits(['select', 'delete']);
+defineEmits(['select', 'delete'])
 
 // ----- TOÀN BỘ LOGIC HIỂN THỊ ĐƯỢC CHUYỂN VÀO ĐÂY -----
 
 // Tạo chuỗi tham số, ví dụ: "14, close"
-const paramsString = computed(() => Object.values(props.condition.params || {}).join(', '));
+const paramsString = computed(() => Object.values(props.condition.params || {}).join(', '))
 
 // Xác định văn bản cho toán tử, ví dụ: "cắt lên trên"
 const operatorText = computed(() => {
   switch (props.condition.operator) {
-    case '>': return 'lớn hơn';
-    case '<': return 'nhỏ hơn';
-    case 'cross_above': return 'cắt lên trên';
-    case 'cross_below': return 'cắt xuống dưới';
-    default: return props.condition.operator;
+    case '>':
+      return 'lớn hơn'
+    case '<':
+      return 'nhỏ hơn'
+    case 'cross_above':
+      return 'cắt lên trên'
+    case 'cross_below':
+      return 'cắt xuống dưới'
+    default:
+      return props.condition.operator
   }
-});
+})
 
 // Xác định class CSS cho toán tử để có màu sắc khác nhau
 const operatorClasses = computed(() => {
-  const op = props.condition.operator;
+  const op = props.condition.operator
   if (op === 'cross_above' || op === 'cross_below') {
-    return 'text-blue-600 font-semibold';
+    return 'text-blue-600 font-semibold'
   }
-  return 'text-slate-500';
-});
+  return 'text-slate-500'
+})
 
 // Xác định phần văn bản đứng trước giá trị (chỉ dùng cho MA)
 const prefixText = computed(() => {
-    if (props.condition.type === INDICATOR_TYPES.MA) {
-        return 'Giá';
-    }
-    return '';
-});
+  if (props.condition.type === INDICATOR_TYPES.MA) {
+    return 'Giá'
+  }
+  return ''
+})
 
 // Xác định phần văn bản giá trị cuối cùng
 const valueText = computed(() => {
-  const { type, value, params } = props.condition;
+  const { type, value, params } = props.condition
 
   // Trường hợp 1: Chỉ báo là MA, luôn hiển thị MA(period)
   if (type === INDICATOR_TYPES.MA) {
-    return `MA(${params.period})`;
+    return `MA(${params.period})`
   }
   // Trường hợp 2: Chỉ báo là MACD, luôn hiển thị 'Đường Signal'
   if (type === INDICATOR_TYPES.MACD) {
-    return 'Đường Signal';
+    return 'Đường Signal'
+  }
+  // [THÊM MỚI] Xử lý cho Parabolic SAR
+  if (type === INDICATOR_TYPES.PARABOLIC_SAR) {
+    // Giá trị của SAR luôn là 'price' (giá)
+    return 'Giá'
   }
   // Trường hợp 3 (mặc định): Hiển thị giá trị `value`.
   // Nếu `value` là null hoặc undefined, hiển thị một chuỗi rỗng.
-  return value ?? '';
-});
+  return value ?? ''
+})
 </script>
 
 <style scoped>
